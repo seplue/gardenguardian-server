@@ -21,7 +21,7 @@ def test_latest():
     cursor = conn.cursor()
 
     # get latest measurements from database
-    query = "SELECT * FROM public.measurements ORDER BY measurementtime ASC, measurementtype ASC, bedname ASC, gardenname ASC LIMIT 8"
+    query = "SELECT * FROM public.measurements ORDER BY measurementtime DESC, measurementtype DESC, bedname DESC, gardenname DESC LIMIT 4"
     cursor.execute(query)
     rows = cursor.fetchall()
 
