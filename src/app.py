@@ -37,13 +37,16 @@ def test_latest():
     return_dict = {}
 
     for row in range(0, len(rows)):
-        return_dict
-        for y in range(0, len(rows[row])):
-            return_string += str(rows[row][y]).strip()
-        return_string += "<br/>"
+        return_dict["measurement_time"] = rows[row][0].strip()
+        return_dict["measurement_type"] = rows[row][1].strip()
+        return_dict["measurement_value"] = rows[row][2]
+        return_dict["bed_name"] = rows[row][3].strip()
+        return_dict["garden_name"] = rows[row][4].strip()
+        # for y in range(0, len(rows[row])):
+        #    return_string += str(rows[row][y]).strip()
 
-    print(return_string)
-    return jsonify(return_string)
+    print(return_dict)
+    return jsonify(return_dict)
 
 
 @app.route('/login')
