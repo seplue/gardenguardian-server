@@ -1,8 +1,9 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, jsonify
+from flask_cors import CORS
 import psycopg2
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/')
 def index():
@@ -21,24 +22,28 @@ def test_latest():
     cursor = conn.cursor()
 
     # get latest measurements from database
-    query = "SELECT * FROM public.measurements ORDER BY measurementtime DESC, measurementtype DESC, bedname DESC, gardenname DESC LIMIT 4"
+    query = "SELECT * FROM public.measurements ORDER BY measurementtime ASC, measurementtype ASC, bedname ASC, gardenname ASC LIMIT 1"
     cursor.execute(query)
+    # save return of query to variable rows
     rows = cursor.fetchall()
 
     conn.commit()
     # close connection
     conn.close()
     cursor.close()
+
     # create string
     return_string = ""
+    return_dict = {}
 
     for row in range(0, len(rows)):
+        return_dict
         for y in range(0, len(rows[row])):
             return_string += str(rows[row][y]).strip()
         return_string += "<br/>"
 
     print(return_string)
-    return return_string
+    return jsonify(return_string)
 
 
 @app.route('/login')
