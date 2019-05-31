@@ -5,9 +5,10 @@ import psycopg2
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route('/')
 def index():
-    return 'index'
+    return 'standard index page'
 
 
 @app.route('/test_latest')
@@ -22,7 +23,7 @@ def test_latest():
     cursor = conn.cursor()
 
     # get latest measurements from database
-    query = "SELECT * FROM public.measurements ORDER BY measurementtime ASC, measurementtype ASC, bedname ASC, gardenname ASC LIMIT 1"
+    query = "SELECT * FROM public.measurements ORDER BY measurementtime ASC, measurementtype ASC, bedname ASC, gardenname ASC LIMIT 4"
     cursor.execute(query)
     # save return of query to variable rows
     rows = cursor.fetchall()
@@ -33,20 +34,25 @@ def test_latest():
     cursor.close()
 
     # create string
-    return_string = ""
+    return_list = []
     return_dict = {}
 
     for row in range(0, len(rows)):
+
+        # add the values of the row to return_dict
         return_dict["measurement_time"] = rows[row][0].strip()
         return_dict["measurement_type"] = rows[row][1].strip()
         return_dict["measurement_value"] = rows[row][2]
         return_dict["bed_name"] = rows[row][3].strip()
         return_dict["garden_name"] = rows[row][4].strip()
-        # for y in range(0, len(rows[row])):
-        #    return_string += str(rows[row][y]).strip()
 
-    print(return_dict)
-    return jsonify(return_dict)
+        # add a copy of return_dict to the return_list
+        return_list.append(dict(return_dict))
+
+        # empty return_dict
+        return_dict.clear()
+
+    return jsonify(return_list)
 
 
 @app.route('/login')
