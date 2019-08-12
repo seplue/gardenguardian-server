@@ -6,6 +6,12 @@ import mysql.connector
 app = Flask(__name__)
 CORS(app)
 
+# development database configuration
+database_address = "192.168.1.31"
+database_user = "gardenguardian"
+database_password = "Passwort123"
+database_name = "gardenguardian_test"
+
 
 @app.route('/')
 def index():
@@ -14,10 +20,6 @@ def index():
 
 @app.route('/test_latest')
 def test_latest():
-    database_address = "192.168.1.31"
-    database_user = "gardenguardian"
-    database_password = "Passwort123"
-    database_name = "gardenguardian_test"
 
     # create connection to database
     mydb = mysql.connector.connect(
@@ -36,32 +38,10 @@ def test_latest():
     # save return of query to variable rows
     rows = mycursor.fetchall()
 
-
-
-    """
-    # open connection
-    conn = psycopg2.connect('host={} user={} password={} dbname={}'
-                            .format(database_address, database_user, database_password, database_name))
-    cursor = conn.cursor()
-
-    # get latest measurements from database
-    query = "SELECT * FROM public.measurements ORDER BY measurementtime ASC, measurementtype ASC, bedname ASC, gardenname ASC LIMIT 4"
-    cursor.execute(query)
-    # save return of query to variable rows
-    rows = cursor.fetchall()
-
-    conn.commit()
-    # close connection
-    conn.close()
-    cursor.close()
-    """
-
-    # the goal here is to create a json with a list of arrays with the data from the database
-    # create string
+    # create a json with a list of arrays with the data from the database
     return_list = []
-    return_dict = {}
-
     for row in range(0, len(rows)):
+        return_dict = {}
         # add the values of the row to return_dict
         return_dict["measurement_time"] = rows[row][0].strip()
         return_dict["measurement_type"] = rows[row][1].strip()
@@ -71,9 +51,6 @@ def test_latest():
 
         # add a copy of return_dict to the return_list
         return_list.append(dict(return_dict))
-
-        # empty return_dict
-        return_dict.clear()
 
     return jsonify(return_list)
 
