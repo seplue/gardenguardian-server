@@ -1,6 +1,7 @@
 from flask import Flask, url_for, jsonify
 from flask_cors import CORS
 import psycopg2
+import mysql.connector
 
 app = Flask(__name__)
 CORS(app)
@@ -14,9 +15,30 @@ def index():
 @app.route('/test_latest')
 def test_latest():
     database_address = "192.168.1.31"
-    database_user = "pi"
-    database_password = "PzFhr2017"
-    database_name = "plantguardian_test"
+    database_user = "gardenguardian"
+    database_password = "Passwort123"
+    database_name = "gardenguardian_test"
+
+    # create connection to database
+    mydb = mysql.connector.connect(
+        host=database_address,
+        user=database_user,
+        passwd=database_password,
+        database=database_name
+    )
+
+    mycursor = mydb.cursor()
+
+    # get latest measurements from database
+    # ordered by newest measurementTime and by alphabetical measurementType
+    sql = "SELECT * FROM measurements ORDER BY measurementTime DESC, MeasurementType ASC LIMIT 4"
+    mycursor.execute(sql)
+    # save return of query to variable rows
+    rows = mycursor.fetchall()
+
+
+
+    """
     # open connection
     conn = psycopg2.connect('host={} user={} password={} dbname={}'
                             .format(database_address, database_user, database_password, database_name))
@@ -32,13 +54,14 @@ def test_latest():
     # close connection
     conn.close()
     cursor.close()
+    """
 
+    # the goal here is to create a json with a list of arrays with the data from the database
     # create string
     return_list = []
     return_dict = {}
 
     for row in range(0, len(rows)):
-
         # add the values of the row to return_dict
         return_dict["measurement_time"] = rows[row][0].strip()
         return_dict["measurement_type"] = rows[row][1].strip()
