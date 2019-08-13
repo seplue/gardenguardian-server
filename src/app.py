@@ -12,6 +12,15 @@ database_user = "gardenguardian"
 database_password = "Passwort123"
 database_name = "gardenguardian_test"
 
+# create connection to database
+mydb = mysql.connector.connect(
+    host=database_address,
+    user=database_user,
+    passwd=database_password,
+    database=database_name
+)
+mycursor = mydb.cursor()
+
 
 @app.route('/')
 def index():
@@ -20,16 +29,6 @@ def index():
 
 @app.route('/test_latest')
 def test_latest():
-
-    # create connection to database
-    mydb = mysql.connector.connect(
-        host=database_address,
-        user=database_user,
-        passwd=database_password,
-        database=database_name
-    )
-
-    mycursor = mydb.cursor()
 
     # get latest measurements from database
     # ordered by newest measurementTime and by alphabetical measurementType
@@ -53,6 +52,11 @@ def test_latest():
         return_list.append(dict(return_dict))
 
     return jsonify(return_list)
+
+
+@app.route('/<garden_name>/<bed_name>/<measurementType>')
+def get_specific_measurement():
+    pass
 
 
 @app.route('/login')
